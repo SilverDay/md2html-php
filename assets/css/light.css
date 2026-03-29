@@ -1,0 +1,7 @@
+/* ==========================================================================
+   light.css — Light-only theme for md2html-php
+   Use this when you want to pin the page to the light theme explicitly.
+   ========================================================================== */
+@import "md2html.css";
+
+html { color-scheme: light; }

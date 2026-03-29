@@ -1,0 +1,16 @@
+# Composer
+/vendor/
+composer.lock
+
+# Generated example output
+/examples/output-*.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
