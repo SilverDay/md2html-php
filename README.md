@@ -296,7 +296,7 @@ vendor/bin/phpunit tests
 Expected output:
 
 ```
-OK (37 tests, 55 assertions)
+OK (38 tests, 59 assertions)
 ```
 
 ---
