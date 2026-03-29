@@ -1,0 +1,34 @@
+/* ==========================================================================
+   dark.css — Dark-only theme for md2html-php
+   Use this when you want to pin the page to the dark theme explicitly.
+   ========================================================================== */
+@import "md2html.css";
+
+html { color-scheme: dark; }
+
+/* Force dark variables regardless of OS preference */
+:root {
+  --bg:          #0d1117;
+  --bg-alt:      #161b22;
+  --bg-code:     #161b22;
+  --border:      #30363d;
+  --text:        #e6edf3;
+  --text-muted:  #8b949e;
+  --link:        #58a6ff;
+  --link-hover:  #79c0ff;
+  --heading:     #e6edf3;
+  --blockquote:  #8b949e;
+  --bq-border:   #3d444d;
+  --table-head:  #161b22;
+  --table-alt:   #161b22;
+  --hr:          #21262d;
+  --shadow:      rgba(0, 0, 0, 0.3);
+
+  --hl-keyword:  #ff7b72;
+  --hl-string:   #a5d6ff;
+  --hl-comment:  #8b949e;
+  --hl-number:   #79c0ff;
+  --hl-variable: #ffa657;
+  --hl-attr:     #7ee787;
+  --hl-tag:      #7ee787;
+}
