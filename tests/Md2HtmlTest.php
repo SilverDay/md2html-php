@@ -126,6 +126,20 @@ class Md2HtmlTest extends TestCase
         self::assertStringContainsString('Continuation text', $html);
     }
 
+    /**
+     * A list item's indented continuation paragraph should fold into that
+     * same <li> and the list should keep counting, not reset to a fresh
+     * <ol> (and restart numbering) at every continuation paragraph.
+     */
+    public function testListItemWithContinuationParagraphKeepsASingleOrderedList(): void
+    {
+        $converter = new Md2Html(['headless' => true]);
+        $html      = $converter->convert("1. First\n   Continuation text.\n2. Second\n   More continuation.");
+        self::assertSame(1, substr_count($html, '<ol>'));
+        self::assertStringContainsString('<li>First<p>Continuation text.</p></li>', $html);
+        self::assertStringContainsString('<li>Second<p>More continuation.</p></li>', $html);
+    }
+
     public function testLink(): void
     {
         $converter = new Md2Html(['headless' => true]);

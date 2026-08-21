@@ -514,20 +514,39 @@ class Md2Html
             }
 
             if ($indent > $baseIndent) {
-                // Nested list – recurse
-                $beforeIndex   = $i;
-                $nestedType    = preg_match('/^[ \t]*\d+\./', $line) ? 'ol' : 'ul';
-                [$nested, $i]  = $this->parseList($lines, $i, $nestedType);
-                if ($i === $beforeIndex) {
-                    // The more-indented line wasn't actually a list item
-                    // (e.g. an indented continuation paragraph under a list
-                    // item) — the recursive call made no progress. Stop the
-                    // list here instead of looping forever re-entering the
-                    // same recursion on an unchanged index.
-                    break;
+                // A more-indented line is either a genuinely nested list
+                // item, or just an indented continuation paragraph
+                // belonging to the *current* (most recent) list item — a
+                // very common way to write multi-line list items. Check
+                // which one it actually is before deciding how to handle
+                // it, rather than assuming "nested list" and recursing
+                // blindly: recursing into a continuation paragraph doesn't
+                // find any list item at all, makes no progress, and either
+                // loops forever or (with the guard below alone) incorrectly
+                // ends the list early, resetting its numbering.
+                $looksLikeListItem = preg_match('/^[ \t]*(?:[*\-+]|\d+\.)\s+/', $line) === 1;
+
+                if ($looksLikeListItem) {
+                    $beforeIndex   = $i;
+                    $nestedType    = preg_match('/^[ \t]*\d+\./', $line) ? 'ol' : 'ul';
+                    [$nested, $i]  = $this->parseList($lines, $i, $nestedType);
+                    if ($i === $beforeIndex) {
+                        // Defensive fallback only — shouldn't happen given
+                        // the $looksLikeListItem check above, but guarantees
+                        // this can never loop forever regardless.
+                        break;
+                    }
+                    // Append to the last <li>
+                    $html = preg_replace('/<\/li>\s*$/', $nested . '</li>', $html, 1) ?? $html;
+                    continue;
                 }
-                // Append to the last <li>
-                $html = preg_replace('/<\/li>\s*$/', $nested . '</li>', $html, 1) ?? $html;
+
+                // Indented continuation paragraph — fold it into the
+                // preceding <li> and keep the list (and its numbering)
+                // going, rather than breaking out of it.
+                $continuation = '<p>' . $this->parseInline(trim($line)) . '</p>';
+                $html         = preg_replace('/<\/li>\s*$/', $continuation . '</li>', $html, 1) ?? $html;
+                $i++;
                 continue;
             }
 
