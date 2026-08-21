@@ -515,8 +515,17 @@ class Md2Html
 
             if ($indent > $baseIndent) {
                 // Nested list – recurse
+                $beforeIndex   = $i;
                 $nestedType    = preg_match('/^[ \t]*\d+\./', $line) ? 'ol' : 'ul';
                 [$nested, $i]  = $this->parseList($lines, $i, $nestedType);
+                if ($i === $beforeIndex) {
+                    // The more-indented line wasn't actually a list item
+                    // (e.g. an indented continuation paragraph under a list
+                    // item) — the recursive call made no progress. Stop the
+                    // list here instead of looping forever re-entering the
+                    // same recursion on an unchanged index.
+                    break;
+                }
                 // Append to the last <li>
                 $html = preg_replace('/<\/li>\s*$/', $nested . '</li>', $html, 1) ?? $html;
                 continue;

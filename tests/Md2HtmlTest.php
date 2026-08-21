@@ -111,6 +111,21 @@ class Md2HtmlTest extends TestCase
         self::assertStringContainsString('<li>', $html);
     }
 
+    /**
+     * Regression: a more-indented line under a list item that is NOT
+     * itself a list item (e.g. an indented continuation paragraph) used
+     * to send parseList() into infinite recursion, since the recursive
+     * call returned without ever advancing past that line and the caller
+     * kept re-entering it forever. A hang here fails the test run.
+     */
+    public function testListItemWithIndentedContinuationParagraphDoesNotHang(): void
+    {
+        $converter = new Md2Html(['headless' => true]);
+        $html      = $converter->convert("1. **First**\n Continuation text, not a list item.\n2. **Second**\n Another continuation.");
+        self::assertStringContainsString('<li>', $html);
+        self::assertStringContainsString('Continuation text', $html);
+    }
+
     public function testLink(): void
     {
         $converter = new Md2Html(['headless' => true]);
